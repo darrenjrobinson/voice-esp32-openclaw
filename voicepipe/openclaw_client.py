@@ -45,7 +45,7 @@ class OpenClawClient:
             f"{self._cfg.openclaw_url}/v1/chat/completions",
             headers=headers,
             json=payload,
-            timeout=aiohttp.ClientTimeout(total=120),  # agent reasoning can take a while
+            timeout=aiohttp.ClientTimeout(total=self._cfg.openclaw_timeout_seconds),
         ) as resp:
             body = await resp.json(content_type=None)
             if resp.status != 200:

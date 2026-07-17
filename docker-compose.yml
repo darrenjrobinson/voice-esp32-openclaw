@@ -24,6 +24,7 @@ services:
       - OPENCLAW_URL=${OPENCLAW_URL:-http://host.docker.internal:18789}
       - OPENCLAW_API_KEY=${OPENCLAW_API_KEY:-}
       - OPENCLAW_SESSION_KEY=${OPENCLAW_SESSION_KEY:-agent:main:voice}
+      - OPENCLAW_TIMEOUT_SECONDS=${OPENCLAW_TIMEOUT_SECONDS:-240}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     extra_hosts:
       - "host.docker.internal:host-gateway"   # reach agenthost OpenClaw from container
@@ -54,6 +55,7 @@ services:
       - OPENCLAW_URL=${OPENCLAW_URL:-http://host.docker.internal:18789}
       - OPENCLAW_API_KEY=${OPENCLAW_API_KEY:-}
       - OPENCLAW_SESSION_KEY=${OPENCLAW_SESSION_KEY:-agent:main:voice}
+      - OPENCLAW_TIMEOUT_SECONDS=${OPENCLAW_TIMEOUT_SECONDS:-240}
       - ESP32_HOST=${ESP32_HOST}
       - ESP32_NOISE_PSK=${ESP32_NOISE_PSK}
       - BRIDGE_HTTP_PORT=10400

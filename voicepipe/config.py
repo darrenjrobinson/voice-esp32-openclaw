@@ -18,6 +18,8 @@ class Config:
     openclaw_session_key: str = "agent:main:voice"
     openclaw_session_mode: str = "user"  # "user" | "header"
     openclaw_model: str = "openclaw"
+    # Agent turns with real tool work can run minutes; the ack phrase covers the wait
+    openclaw_timeout_seconds: float = 240.0
     openclaw_system_prompt: str = (
         "You are answering by voice on a smart speaker. Reply in one to three short, "
         "conversational spoken sentences. No markdown, no lists, no URLs. "
@@ -113,6 +115,9 @@ def load_config(require_xai_key: bool = True) -> Config:
         openclaw_session_key=os.environ.get("OPENCLAW_SESSION_KEY", Config.openclaw_session_key),
         openclaw_session_mode=session_mode,
         openclaw_model=os.environ.get("OPENCLAW_MODEL", Config.openclaw_model),
+        openclaw_timeout_seconds=float(
+            os.environ.get("OPENCLAW_TIMEOUT_SECONDS", str(Config.openclaw_timeout_seconds))
+        ),
         openclaw_system_prompt=os.environ.get("OPENCLAW_SYSTEM_PROMPT", Config.openclaw_system_prompt),
         xai_voice=os.environ.get("XAI_VOICE", Config.xai_voice),
         xai_tts_language=os.environ.get("XAI_TTS_LANGUAGE", Config.xai_tts_language),
