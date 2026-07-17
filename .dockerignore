@@ -1,0 +1,10 @@
+.venv/
+.git/
+out/
+audio/
+scripts/
+satellite/
+__pycache__/
+*.pyc
+.env
+*.md

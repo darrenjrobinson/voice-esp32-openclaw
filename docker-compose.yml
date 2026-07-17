@@ -1,0 +1,69 @@
+services:
+  voice-wyoming:
+    image: marvin/voice-bridge:latest
+    build: .
+    container_name: voice-wyoming
+    restart: always
+    ports:
+      - "10200:10200"   # Wyoming TTS (Phase 1 — HA integration)
+      # - "10300:10300" # Wyoming pipeline (Phase 2 — ESP32 direct)
+    environment:
+      - STT_PROVIDER=${STT_PROVIDER:-xai}
+      - TTS_PROVIDER=${TTS_PROVIDER:-xai}
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - XAI_VOICE=${XAI_VOICE:-eve}
+      - XAI_TTS_LANGUAGE=${XAI_TTS_LANGUAGE:-en}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-}
+      - ELEVENLABS_TTS_MODEL=${ELEVENLABS_TTS_MODEL:-eleven_flash_v2_5}
+      - ELEVENLABS_STT_MODEL=${ELEVENLABS_STT_MODEL:-scribe_v1}
+      - ELEVENLABS_OUTPUT_RATE=${ELEVENLABS_OUTPUT_RATE:-24000}
+      - TTS_SAMPLE_RATE=${TTS_SAMPLE_RATE:-24000}
+      - TTS_STREAMING=${TTS_STREAMING:-true}
+      # Phase 2 (pipeline server) additionally needs:
+      - OPENCLAW_URL=${OPENCLAW_URL:-http://host.docker.internal:18789}
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY:-}
+      - OPENCLAW_SESSION_KEY=${OPENCLAW_SESSION_KEY:-agent:main:voice}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # reach agenthost OpenClaw from container
+
+  # Phase 2: direct ESP32 bridge, no HA. Start with: docker compose --profile bridge up -d
+  voice-bridge:
+    image: marvin/voice-bridge:latest
+    build: .
+    container_name: voice-bridge
+    restart: always
+    profiles: ["bridge"]
+    command: ["python", "-m", "server.esphome_bridge"]
+    ports:
+      - "10400:10400"   # TTS fetch endpoint (the ESP32 downloads audio from here)
+    environment:
+      - STT_PROVIDER=${STT_PROVIDER:-xai}
+      - TTS_PROVIDER=${TTS_PROVIDER:-xai}
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - XAI_VOICE=${XAI_VOICE:-eve}
+      - XAI_TTS_LANGUAGE=${XAI_TTS_LANGUAGE:-en}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-}
+      - ELEVENLABS_TTS_MODEL=${ELEVENLABS_TTS_MODEL:-eleven_flash_v2_5}
+      - ELEVENLABS_STT_MODEL=${ELEVENLABS_STT_MODEL:-scribe_v1}
+      - ELEVENLABS_OUTPUT_RATE=${ELEVENLABS_OUTPUT_RATE:-24000}
+      - TTS_SAMPLE_RATE=${TTS_SAMPLE_RATE:-24000}
+      - TTS_STREAMING=${TTS_STREAMING:-true}
+      - OPENCLAW_URL=${OPENCLAW_URL:-http://host.docker.internal:18789}
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY:-}
+      - OPENCLAW_SESSION_KEY=${OPENCLAW_SESSION_KEY:-agent:main:voice}
+      - ESP32_HOST=${ESP32_HOST}
+      - ESP32_NOISE_PSK=${ESP32_NOISE_PSK}
+      - BRIDGE_HTTP_PORT=10400
+      - BRIDGE_ADVERTISE_HOST=${BRIDGE_ADVERTISE_HOST:-192.168.6.40}  # container autodetect is wrong
+      - BRIDGE_VOLUME=${BRIDGE_VOLUME:-1.0}
+      - BRIDGE_CHUNKED=${BRIDGE_CHUNKED:-true}
+      - BRIDGE_ACK_PHRASE=${BRIDGE_ACK_PHRASE-On it.}
+      - VAD_THRESHOLD=${VAD_THRESHOLD:-500}
+      - VAD_SILENCE_SECONDS=${VAD_SILENCE_SECONDS:-0.8}
+      - VAD_MAX_SECONDS=${VAD_MAX_SECONDS:-10}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

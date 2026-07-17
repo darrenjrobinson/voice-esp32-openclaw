@@ -1,0 +1,14 @@
+.env
+# Local-only planning doc — not for the public repo
+grok-voice-esp32-openclaw-prd.md
+# xAI's API reference dump (their content) — local reference only
+Grok Voice API.md
+# Working-notes version of the README — local only
+README-WIP.md
+.venv/
+venv/
+__pycache__/
+*.pyc
+out/
+audio/*
+!audio/.gitkeep
