@@ -32,7 +32,12 @@ class Orchestrator:
         self._openclaw = OpenClawClient(config, session)
 
     async def run_query(self, audio: PcmAudio, phase: str = "0a") -> PipelineResult:
-        metrics = TurnMetrics(phase=phase)
+        metrics = TurnMetrics(
+            phase=phase,
+            stt_provider=self._cfg.stt_provider,
+            tts_provider=self._cfg.tts_provider,
+            tts_model=self._cfg.elevenlabs_tts_model if self._cfg.tts_provider == "elevenlabs" else "",
+        )
 
         wav_in = build_wav_bytes(audio)
         with metrics.stage(f"stt ({self._cfg.stt_provider})"):

@@ -192,7 +192,12 @@ class VoiceBridge:
         self._api.send_voice_assistant_event(event_type, data)
 
     async def _run_turn(self) -> None:
-        metrics = TurnMetrics(phase="2")
+        metrics = TurnMetrics(
+            phase="2",
+            stt_provider=self._cfg.stt_provider,
+            tts_provider=self._cfg.tts_provider,
+            tts_model=self._cfg.elevenlabs_tts_model if self._cfg.tts_provider == "elevenlabs" else "",
+        )
         chat_task: asyncio.Task | None = None
         try:
             self._event(VAEvent.VOICE_ASSISTANT_RUN_START)

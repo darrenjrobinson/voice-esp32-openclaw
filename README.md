@@ -135,6 +135,30 @@ Everything below was discovered by live debugging against a real BOX-3 — each 
 
 Also: xAI's `/v1/tts` returns **raw audio** by default (base64-JSON only with `with_timestamps=true`), and its streamed WAVs carry placeholder RIFF sizes — durations must come from actual PCM length.
 
+## Cost analysis
+
+Per-turn metrics (with providers, USD, and ElevenLabs credits) are appended to `out/metrics.jsonl` on every turn. Rates the cost model uses (confirmed 2026-07):
+
+| Stage | xAI | ElevenLabs |
+|---|---|---|
+| STT | $0.10 / hour of audio | $0.22 / hour (Scribe) |
+| TTS | $15 / 1M chars ($0.015 / 1k) | 0.5 credits/char on Flash & Turbo, 1 credit/char on other models. API billing ≈ $0.10 / 1k credits (Flash ≈ $0.05 / 1k chars); subscription tiers draw from the plan's monthly credit allowance instead |
+
+A typical turn (a ~4 s question, ~300-char spoken reply):
+
+| Combo | STT | TTS | Total |
+|---|---|---|---|
+| xAI + xAI | ~$0.0001 | ~$0.0045 | **~$0.005** |
+| xAI STT + ElevenLabs Flash TTS | ~$0.0001 | 150 credits (≈$0.015) | **~$0.015** |
+| ElevenLabs both | ~$0.0002 | 150 credits (≈$0.015) | **~$0.015** |
+
+Practical notes:
+
+- **The ElevenLabs free tier's 10k credits/month ≈ 65–70 such turns** on Flash (about 10 minutes of speech). The `tts_credits` field in `metrics.jsonl` lets you track burn.
+- STT is cheap on either provider — the split combo (xAI STT + ElevenLabs TTS) saves ~$0.0001/turn over all-ElevenLabs, so choose STT by accuracy/latency preference rather than cost; TTS is where the money goes.
+- The ack phrase is synthesized once per container start (~23 chars), then cached.
+- Agent (OpenClaw) costs are whatever your agent burns — not counted here.
+
 ## Latency expectations
 
 For a typical turn: ~1 s STT + **agent time** + ~2–4 s to first audio. Agent time dominates — 3–7 s for simple questions, 60 s+ when the agent does real tool work; the ack phrase covers that gap. The voice pipeline itself contributes well under 10 s end-to-end, and Wyoming/HTTP transport overhead is negligible (measured ~7 ms).
