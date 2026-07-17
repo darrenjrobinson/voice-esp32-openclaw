@@ -101,6 +101,24 @@ Say the wake word. Done.
 - **ElevenLabs audio path**: the API serves PCM at `ELEVENLABS_OUTPUT_RATE` (24 kHz on free tier); the bridge resamples to the device's advertised rate (48 kHz FLAC on the BOX-3) transparently, so no firmware or format concerns apply.
 - The spoken language for both providers comes from `XAI_TTS_LANGUAGE` (default `en`).
 
+### Applying `.env` changes to a running deployment
+
+Compose reads the `.env` sitting **next to `docker-compose.yml`**, so always run it from the repo directory:
+
+```bash
+cd <repo dir>
+docker compose --profile bridge up -d        # recreates only containers whose config changed
+```
+
+No `--build` is needed for env-only changes. Notes:
+
+- If it reports nothing to recreate but you know `.env` changed, you probably edited a different copy or ran from the wrong directory; `--force-recreate` settles it either way.
+- Verify what a container is actually running with:
+  ```bash
+  docker inspect voice-bridge --format '{{range .Config.Env}}{{println .}}{{end}}' | grep PROVIDER
+  ```
+- Containers only read `.env` at creation — editing the file does nothing until they are recreated (`restart` is not enough).
+
 ## Device quirks this bridge already handles
 
 Everything below was discovered by live debugging against a real BOX-3 — each one silently broke playback until handled:
