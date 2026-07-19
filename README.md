@@ -1,5 +1,8 @@
 # voice-esp32-openclaw
 
+[![ClawHub](https://img.shields.io/badge/%F0%9F%A6%9E_ClawHub-esp32--voice--assistant-E5533D)](https://clawhub.ai/darrenjrobinson/skills/esp32-voice-assistant)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A hardware voice assistant with **no Home Assistant in the voice path**: an ESP32-S3-BOX-3 running stock ESPHome firmware talks directly to a Python bridge that uses **xAI Grok Voice** or **ElevenLabs** for speech-to-text and text-to-speech (independently switchable — mix and match), and **OpenClaw** as the agent brain.
 
 ```
@@ -17,7 +20,7 @@ ESP32-S3-BOX-3 ──── ESPHome native API (TCP 6053) ────┐
                                                  └─ sentence-chunked playback
 ```
 
-**Install via ClawHub:** this integration is published as an OpenClaw skill — `clawhub install esp32-voice-assistant` gives your agent the setup and operating instructions; the skill source lives in [`skill/esp32-voice-assistant/`](skill/esp32-voice-assistant/). The deployment itself is still this repo (clone + `docker compose`), as described below.
+**Install via ClawHub:** this integration is published as [an OpenClaw skill](https://clawhub.ai/darrenjrobinson/skills/esp32-voice-assistant) — `clawhub install esp32-voice-assistant` gives your agent the setup and operating instructions; the skill source lives in [`skill/esp32-voice-assistant/`](skill/esp32-voice-assistant/). The deployment itself is still this repo (clone + `docker compose`), as described below.
 
 **The key insight:** the ESP32 is the TCP *server* in the ESPHome native API — Home Assistant is just a client that subscribes as the voice-assistant peer. This bridge impersonates that client with [aioesphomeapi](https://pypi.org/project/aioesphomeapi/), so **the stock firmware needs zero changes** — no reflash, no YAML edits. Point it at the device and HA is out of the loop.
 
