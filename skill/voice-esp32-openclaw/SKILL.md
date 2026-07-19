@@ -38,7 +38,7 @@ STT and TTS providers are **independently switchable** between xAI Grok Voice an
 
 2. In OpenClaw, make sure the **chat interface is enabled** so `/v1/chat/completions` is being served, and note its URL and API key.
 
-3. Edit `.env` — at minimum: `STT_PROVIDER`/`TTS_PROVIDER`, the matching API key(s), `OPENCLAW_URL`, `OPENCLAW_API_KEY`, `ESP32_HOST` (and `ESP32_NOISE_PSK` if the device API is encrypted), and `BRIDGE_ADVERTISE_HOST` (the Docker host's LAN IP — required inside Docker). A commented reference copy of `.env.example` ships with this skill.
+3. Edit `.env` — at minimum: `STT_PROVIDER`/`TTS_PROVIDER`, the matching API key(s), `OPENCLAW_URL`, `OPENCLAW_API_KEY`, `ESP32_HOST` (and `ESP32_NOISE_PSK` if the device API is encrypted), and `BRIDGE_ADVERTISE_HOST` (the Docker host's LAN IP — required inside Docker). A commented reference copy ships with this skill as [example.env](example.env).
 
 4. **Disconnect Home Assistant's voice subscription** for the device (disable the ESPHome integration entry or its *assist satellite* entity). The protocol allows only one voice-assistant subscriber — with two, the wake word silently does nothing.
 
