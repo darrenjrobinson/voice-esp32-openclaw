@@ -17,6 +17,8 @@ ESP32-S3-BOX-3 ──── ESPHome native API (TCP 6053) ────┐
                                                  └─ sentence-chunked playback
 ```
 
+**Install via ClawHub:** this integration is published as an OpenClaw skill — `clawhub install voice-esp32-openclaw` gives your agent the setup and operating instructions; the skill source lives in [`skill/voice-esp32-openclaw/`](skill/voice-esp32-openclaw/). The deployment itself is still this repo (clone + `docker compose`), as described below.
+
 **The key insight:** the ESP32 is the TCP *server* in the ESPHome native API — Home Assistant is just a client that subscribes as the voice-assistant peer. This bridge impersonates that client with [aioesphomeapi](https://pypi.org/project/aioesphomeapi/), so **the stock firmware needs zero changes** — no reflash, no YAML edits. Point it at the device and HA is out of the loop.
 
 ## Features
